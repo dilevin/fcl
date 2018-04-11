@@ -444,6 +444,79 @@ int BVHModel<BV>::addSubModel(const std::vector<Vector3<S>>& ps, const std::vect
   return BVH_OK;
 }
 
+template <typename BV>
+int BVHModel<BV>::addSubModel(const Eigen::Matrix<typename BV::S, Eigen::Dynamic, Eigen::Dynamic> &ps,
+                              const Eigen::MatrixXi &ts)
+{
+    if(ts.cols() > 3) {
+        std::cerr <<" FCL only supports collision detection with triangle meshes \n";
+        exit(0);
+    }
+    
+    if(build_state == BVH_BUILD_STATE_PROCESSED)
+    {
+        std::cerr << "BVH Warning! Call addSubModel() in a wrong order. addSubModel() was ignored. Must do a beginModel() to clear the model for addition of new vertices." << std::endl;
+        return BVH_ERR_BUILD_OUT_OF_SEQUENCE;
+    }
+    
+    int num_vertices_to_add = ps.rows();
+    
+    if(num_vertices + num_vertices_to_add - 1 >= num_vertices_allocated)
+    {
+        Vector3<S>* temp = new Vector3<S>[num_vertices_allocated * 2 + num_vertices_to_add - 1];
+        if(!temp)
+        {
+            std::cerr << "BVH Error! Out of memory for vertices array on addSubModel() call!" << std::endl;
+            return BVH_ERR_MODEL_OUT_OF_MEMORY;
+        }
+        
+        memcpy(temp, vertices, sizeof(Vector3<S>) * num_vertices);
+        delete [] vertices;
+        vertices = temp;
+        num_vertices_allocated = num_vertices_allocated * 2 + num_vertices_to_add - 1;
+    }
+    
+    int offset = num_vertices;
+    
+    for(int i = 0; i < num_vertices_to_add; ++i)
+    {
+        
+       // vertices[num_vertices] = ps.row(i);
+        num_vertices++;
+    }
+    
+    
+    int num_tris_to_add = ts.rows();
+    
+    if(num_tris + num_tris_to_add - 1 >= num_tris_allocated)
+    {
+        if(num_tris_allocated == 0)
+        {
+            num_tris_allocated = 1;
+        }
+        Triangle* temp = new(std::nothrow) Triangle[num_tris_allocated * 2 + num_tris_to_add - 1];
+        if(!temp)
+        {
+            std::cerr << "BVH Error! Out of memory for tri_indices array on addSubModel() call!" << std::endl;
+            return BVH_ERR_MODEL_OUT_OF_MEMORY;
+        }
+        
+        memcpy(temp, tri_indices, sizeof(Triangle) * num_tris);
+        delete [] tri_indices;
+        tri_indices = temp;
+        num_tris_allocated = num_tris_allocated * 2 + num_tris_to_add - 1;
+    }
+    
+    for(int i = 0; i < num_tris_to_add; ++i)
+    {
+        Triangle t(ts(i,0), ts(i,1), ts(i,2));
+        tri_indices[num_tris].set(t[0] + offset, t[1] + offset, t[2] + offset);
+        num_tris++;
+    }
+    
+    return BVH_OK;
+}
+    
 //==============================================================================
 template <typename BV>
 int BVHModel<BV>::endModel()

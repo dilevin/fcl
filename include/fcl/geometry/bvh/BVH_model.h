@@ -107,6 +107,10 @@ public:
 
   /// @brief Add a set of points in the new BVH model
   int addSubModel(const std::vector<Vector3<S>>& ps);
+    
+  /// @brief Add a set of points in the new BVH model
+  int addSubModel(const Eigen::Matrix<typename BV::S, Eigen::Dynamic, Eigen::Dynamic> &ps,
+                                const Eigen::MatrixXi &ts);
 
   /// @brief End BVH model construction, will build the bounding volume hierarchy
   int endModel();
