@@ -128,6 +128,7 @@ public:
   /// @brief Replace a set of points in the old BVH model
   int replaceSubModel(const std::vector<Vector3<S>>& ps);
 
+  int replaceSubModel(const Eigen::Matrix<typename BV::S, Eigen::Dynamic, Eigen::Dynamic> &ps);
   /// @brief End BVH model replacement, will also refit or rebuild the bounding volume hierarchy
   int endReplaceModel(bool refit = true, bool bottomup = true);
 

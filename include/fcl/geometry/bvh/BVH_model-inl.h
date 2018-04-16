@@ -481,7 +481,7 @@ int BVHModel<BV>::addSubModel(const Eigen::Matrix<typename BV::S, Eigen::Dynamic
     for(int i = 0; i < num_vertices_to_add; ++i)
     {
         
-       // vertices[num_vertices] = ps.row(i);
+        vertices[num_vertices] = ps.row(i);
         num_vertices++;
     }
     
@@ -660,7 +660,24 @@ int BVHModel<BV>::replaceSubModel(const std::vector<Vector3<S>>& ps)
   }
   return BVH_OK;
 }
-
+//==============================================================================
+//Convenience method for mesh vertices stored in an eigen method
+template <typename BV>
+int BVHModel<BV>::replaceSubModel(const Eigen::Matrix<typename BV::S, Eigen::Dynamic, Eigen::Dynamic> &ps)
+{
+    if(build_state != BVH_BUILD_STATE_REPLACE_BEGUN)
+    {
+        std::cerr << "BVH Warning! Call replaceSubModel() in a wrong order. replaceSubModel() was ignored. Must do a beginReplaceModel() for initialization." << std::endl;
+        return BVH_ERR_BUILD_OUT_OF_SEQUENCE;
+    }
+    
+    for(unsigned int i = 0; i < ps.size(); ++i)
+    {
+        vertices[num_vertex_updated] = ps.row(i);
+        num_vertex_updated++;
+    }
+    return BVH_OK;
+}
 //==============================================================================
 template <typename BV>
 int BVHModel<BV>::endReplaceModel(bool refit, bool bottomup)
@@ -786,12 +803,14 @@ int BVHModel<BV>::endUpdateModel(bool refit, bool bottomup)
     return BVH_ERR_INCORRECT_DATA;
   }
 
+    
   if(refit)  // refit, do not change BVH structure
   {
     refitTree(bottomup);
   }
   else // reconstruct bvh tree based on current frame data
   {
+      num_bvs = 0; //DIWL
     buildTree();
 
     // then refit
