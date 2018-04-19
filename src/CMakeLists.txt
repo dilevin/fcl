@@ -45,16 +45,16 @@ endif()
 # Use the IMPORTED target from newer versions of Eigen3Config.cmake if
 # available, otherwise fall back to EIGEN3_INCLUDE_DIRS from older versions of
 # Eigen3Config.cmake or EIGEN3_INCLUDE_DIR from FindEigen3.cmake
-if(TARGET Eigen3::Eigen)
+#if(TARGET Eigen3::Eigen)
   # Note that Eigen3::Eigen is an INTERFACE library, so the INCLUDE_DIRECTORIES
   # and INTERFACE_INCLUDE_DIRECTORIES are populated, but nothing is actually
   # linked
-  target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)
-elseif(EIGEN3_INCLUDE_DIRS)
-  target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC "${EIGEN3_INCLUDE_DIRS}")
-else()
-  target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC "${EIGEN3_INCLUDE_DIR}")
-endif()
+  # target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)
+  #elseif(EIGEN3_INCLUDE_DIRS)
+  #  target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC "${EIGEN3_INCLUDE_DIRS}")
+  #else()
+  include_directories(${EIGEN3_INCLUDE_DIR})
+  #endif()
 
 if(FCL_HAVE_OCTOMAP)
   # Use the IMPORTED target from newer versions of octomap-config.cmake if
