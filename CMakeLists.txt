@@ -260,8 +260,8 @@ configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/cmake_uninstall.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/CMakeModules/cmake_uninstall.cmake"
   IMMEDIATE @ONLY)
-add_custom_target(uninstall
-  "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/CMakeModules/cmake_uninstall.cmake")
+#add_custom_target(uninstall
+# "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/CMakeModules/cmake_uninstall.cmake")
 
 option(FCL_BUILD_TESTS "Build FCL tests" ON)
 if(FCL_BUILD_TESTS AND NOT FCL_HIDE_ALL_SYMBOLS)
